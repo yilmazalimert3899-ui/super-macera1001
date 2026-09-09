@@ -23,7 +23,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #hud{position:absolute;top:max(10px,env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:space-between;padding:8px 13px;color:#fff;font-weight:900;font-size:16px;text-shadow:2px 2px 4px #000;pointer-events:none}
 #hud .title{position:absolute;left:50%;transform:translateX(-50%);top:5px;font-size:18px;letter-spacing:1px}
 #hud.hidden{display:none}
-#controls{position:absolute;left:0;right:0;bottom:max(70px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;padding:0 16px;pointer-events:none}
+#controls{position:absolute;left:0;right:0;bottom:max(70px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:end;padding:0 16px;pointer-events:none}
 #controls.hidden{display:none}
 .controlGroup{display:flex;gap:10px}
 .control{width:67px;height:67px;border-radius:21px;border:2px solid #ffffff77;background:#12212acc;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;box-shadow:0 6px 14px #0007;pointer-events:auto;touch-action:none}
@@ -76,19 +76,115 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 <div id="result" class="screen hidden">
   <h2>🎉 TEBRİKLER!</h2>
   <p>Bölümü tamamladınız!<br><b>Asansör güvenle kapandı.</b></p>
-  <button class="resultButton" id="replay">YENİDEN OYNA</button>
+  <button class="resultButton" id="replay">Yeniden Oyna</button>
   <button class="resultButton" id="next">SIRADAKİ BÖLÜM</button>
-  <button class="resultButton" id="toMenu">ANA MENÜ</button>
+  <button class="resultButton" id="toMenu">Ana Menü</button>
   <div class="small">2. bölüm henüz hazırlanmadı.</div>
 </div>
 
 <div id="gameOver" class="screen hidden">
   <h2>💥 OYUN BİTTİ</h2>
   <p>Yaratığa çarptın veya parkurdan düştün.</p>
-  <button class="resultButton" id="retry">YENİDEN OYNA</button>
-  <button class="resultButton" id="overMenu">ANA MENÜ</button>
+  <button class="resultButton" id="retry">Yeniden Oyna</button>
+  <button class="resultButton" id="overMenu">Ana Menü</button>
 </div>
 </div>
+
+<!-- YÖNETİCİ PANELİ (SOL ÜSTTE "PANEL" BUTONU VE ŞİFRE SİSTEMİ) -->
+<button id="adminOpenBtn" style="position:fixed;top:10px;left:10px;z-index:99999;padding:8px 14px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;box-shadow:0 4px 6px rgba(0,0,0,0.3);font-size:14px;">Panel</button>
+
+<!-- ŞİFRE EKRANI MODALI -->
+<div id="adminPassModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100000;justify-content:center;align-items:center;">
+  <div style="background:#222;padding:25px;border-radius:12px;text-align:center;color:#fff;width:300px;box-shadow:0 5px 15px rgba(0,0,0,0.5);">
+    <h3>Yönetici Girişi</h3>
+    <p style="font-size:12px;color:#aaa;margin:10px 0;">Şifreyi giriniz:</p>
+    <input type="password" id="adminPassInput" style="width:100%;padding:10px;border-radius:6px;border:1px solid #444;background:#111;color:#fff;margin-bottom:15px;text-align:center;" placeholder="Şifre">
+    <button id="adminPassSubmit" style="padding:8px 15px;background:#2ecc71;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-right:5px;">Giriş</button>
+    <button id="adminPassClose" style="padding:8px 15px;background:#e74c3c;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">İptal</button>
+  </div>
+</div>
+
+<!-- ANA YÖNETİCİ KONTROL PANELİ -->
+<div id="adminControlPanel" style="display:none;position:fixed;top:50px;left:10px;background:rgba(20,20,20,0.95);color:#fff;padding:15px;border-radius:10px;z-index:100000;width:280px;max-height:85vh;overflow-y:auto;box-shadow:0 5px 20px rgba(0,0,0,0.5);font-size:13px;border:1px solid #444;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #444;padding-bottom:8px;">
+    <h4 style="margin:0;color:#f39c12;">Geliştirici Paneli</h4>
+    <button id="adminPanelCloseBtn" style="background:none;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>
+  </div>
+
+  <!-- KİŞİSEL / BÜTÜN OYUNCULAR SEÇİMİ -->
+  <div style="margin-bottom:10px;background:#333;padding:6px;border-radius:6px;text-align:center;">
+    <label style="font-size:11px;color:#ccc;display:block;margin-bottom:3px;">Hedef Kapsamı:</label>
+    <select id="adminTargetScope" style="width:100%;padding:5px;background:#222;color:#fff;border:1px solid #555;border-radius:4px;">
+      <option value="personal">Kişisel (Sadece Bana)</option>
+      <option value="all">Bütün Oyuncular / Harita</option>
+    </select>
+  </div>
+
+  <!-- ALTIN EKLEME -->
+  <div style="margin-bottom:8px;">
+    <label style="display:block;margin-bottom:2px;">Altın Ekle:</label>
+    <div style="display:flex;gap:5px;">
+      <input type="number" id="adminGoldInput" value="50" style="width:70%;padding:5px;background:#222;color:#fff;border:1px solid #555;border-radius:4px;">
+      <button id="adminAddGoldBtn" style="width:30%;background:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer;">Ekle</button>
+    </div>
+  </div>
+
+  <!-- HIZ AYARI -->
+  <div style="margin-bottom:8px;">
+    <label style="display:block;margin-bottom:2px;">Hız Çarpanı:</label>
+    <div style="display:flex;gap:5px;">
+      <input type="number" id="adminSpeedInput" value="1.5" step="0.1" style="width:70%;padding:5px;background:#222;color:#fff;border:1px solid #555;border-radius:4px;">
+      <button id="adminSetSpeedBtn" style="width:30%;background:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer;">Uygula</button>
+    </div>
+  </div>
+
+  <!-- CAN AYARI -->
+  <div style="margin-bottom:8px;">
+    <label style="display:block;margin-bottom:2px;">Can Ayarı:</label>
+    <div style="display:flex;gap:5px;">
+      <input type="number" id="adminLifeInput" value="5" style="width:70%;padding:5px;background:#222;color:#fff;border:1px solid #555;border-radius:4px;">
+      <button id="adminSetLifeBtn" style="width:30%;background:#3498db;color:#fff;border:none;border-radius:4px;cursor:pointer;">Ayarla</button>
+    </div>
+  </div>
+
+  <!-- DÜŞMAN AÇ / KAPA -->
+  <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+    <span>Düşmanlar:</span>
+    <button id="adminToggleEnemiesBtn" style="padding:4px 8px;background:#2ecc71;color:#fff;border:none;border-radius:4px;cursor:pointer;">Açık</button>
+  </div>
+
+  <!-- ASANSÖR TEST ETME -->
+  <div style="margin-bottom:8px;">
+    <button id="adminTestElevatorBtn" style="width:100%;padding:6px;background:#9b59b6;color:#fff;border:none;border-radius:4px;cursor:pointer;">Asansörü Test Et (Kapat)</button>
+  </div>
+
+  <!-- BÖLÜM GEÇME -->
+  <div style="margin-bottom:8px;">
+    <button id="adminWinLevelBtn" style="width:100%;padding:6px;background:#e67e22;color:#fff;border:none;border-radius:4px;cursor:pointer;">Mevcut Bölümü Geç (Kazan)</button>
+  </div>
+
+  <!-- TEST MODU -->
+  <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+    <span>Ölümsüzlük (Test Modu):</span>
+    <button id="adminTestModeBtn" style="padding:4px 8px;background:#7f8c8d;color:#fff;border:none;border-radius:4px;cursor:pointer;">Kapalı</button>
+  </div>
+
+  <!-- GECE EVENTİ -->
+  <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+    <span>Gece Eventi:</span>
+    <button id="adminNightEventBtn" style="padding:4px 8px;background:#34495e;color:#fff;border:none;border-radius:4px;cursor:pointer;">Geceye Çevir</button>
+  </div>
+
+  <!-- GLOBAL DUYURU / YAZI GÖNDERME -->
+  <div style="margin-top:10px;border-top:1px solid #444;padding-top:8px;">
+    <label style="display:block;margin-bottom:2px;font-size:11px;color:#f39c12;">Global Duyuru Gönder (Herkes Görür):</label>
+    <input type="text" id="adminNoticeInput" placeholder="Yazı yazın..." style="width:100%;padding:5px;background:#222;color:#fff;border:1px solid #555;border-radius:4px;margin-bottom:5px;">
+    <button id="adminSendNoticeBtn" style="width:100%;padding:5px;background:#e67e22;color:#fff;border:none;border-radius:4px;cursor:pointer;">Herkese Duyur</button>
+  </div>
+</div>
+
+<!-- HERKESİN EKRANINDA GÖRÜNECEK GLOBAL DUYURU BANNER'I -->
+<div id="globalAnnouncementBanner" style="display:none;position:fixed;top:15px;left:50%;transform:translateX(-50%);background:rgba(231,76,60,0.9);color:#fff;padding:8px 20px;border-radius:20px;z-index:9998;font-weight:bold;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.3);text-align:center;pointer-events:none;"></div>
 
 <script>
 (() => {
@@ -118,6 +214,12 @@ const lifeHud=document.getElementById('lifeHud');
 let running=false, level=1, cameraX=0, coins=0, lives=3, last=0;
 let player, platforms=[], enemies=[], gold=[], clouds=[], trees=[], elevator, particles=[];
 const input={left:false,right:false};
+
+// ÖZEL YÖNETİCİ EK DURUMLARI
+let customSpeedMultiplier = 1.0;
+let enemiesActive = true;
+let testModeActive = false;
+let nightEventActive = false;
 
 function hideScreens(){
   mainMenu.classList.add('hidden'); levelScreen.classList.add('hidden');
@@ -215,16 +317,18 @@ function overlap(a,b){
 }
 
 function stompOrDie(e){
+  if(testModeActive) return; // Test modu açıksa ölmez
   const wasAbove=player.y+player.h-player.vy <= e.y+10;
   if(player.vy>0 && wasAbove){
     player.y=e.y-player.h; player.vy=-8.5;
-    e.dead=true; coins+=2; burst(e.x+e.w/2,e.y+20,12);
+    e.dead=true; coins+=2; burst(e.x+e.w/2,e.y+20,12); updateHud();
   }else if(player.inv<=0){
     loseLife();
   }
 }
 
 function loseLife(){
+  if(testModeActive) return;
   lives--; updateHud(); burst(player.x+17,player.y+25,18);
   if(lives<=0){running=false;controls.classList.add('hidden');gameOver.classList.remove('hidden');return}
   player.x=Math.max(40,player.x-220); player.y=400; player.vy=0; player.inv=90;
@@ -233,7 +337,7 @@ function loseLife(){
 function update(dt){
   if(!running)return;
 
-  const accel=0.7, maxSpeed=4.4;
+  const accel=0.7, maxSpeed=4.4 * customSpeedMultiplier;
   if(input.left)player.vx-=accel*dt;
   if(input.right)player.vx+=accel*dt;
   if(!input.left&&!input.right)player.vx*=Math.pow(.78,dt);
@@ -255,13 +359,15 @@ function update(dt){
 
   if(player.inv>0)player.inv-=dt;
 
-  for(const e of enemies){
-    if(e.dead)continue;
-    e.x+=e.v*dt;
-    if(e.x<e.min||e.x>e.max)e.v*=-1;
-    if(overlap(player,e))stompOrDie(e);
+  if(enemiesActive){
+    for(const e of enemies){
+      if(e.dead)continue;
+      e.x+=e.v*dt;
+      if(e.x<e.min||e.x>e.max)e.v*=-1;
+      if(overlap(player,e))stompOrDie(e);
+    }
+    enemies=enemies.filter(e=>!e.dead);
   }
-  enemies=enemies.filter(e=>!e.dead);
 
   for(const g of gold){
     if(g.taken)continue;
@@ -304,11 +410,20 @@ function draw(){
   ctx.clearRect(0,0,W,H);
 
   const sky=ctx.createLinearGradient(0,0,0,H);
-  sky.addColorStop(0,'#55b9eb');sky.addColorStop(.58,'#bde9e5');sky.addColorStop(1,'#eef4cf');
+  if(nightEventActive){
+    sky.addColorStop(0,'#0b0f19');sky.addColorStop(.58,'#152030');sky.addColorStop(1,'#2c3e50');
+  } else {
+    sky.addColorStop(0,'#55b9eb');sky.addColorStop(.58,'#bde9e5');sky.addColorStop(1,'#eef4cf');
+  }
   ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
 
-  ctx.fillStyle='#fff4a6';ctx.beginPath();ctx.arc(W*.78,100,42,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#79ad83';ctx.beginPath();
+  if(nightEventActive){
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(W*.78,100,35,0,Math.PI*2);ctx.fill();
+  } else {
+    ctx.fillStyle='#fff4a6';ctx.beginPath();ctx.arc(W*.78,100,42,0,Math.PI*2);ctx.fill();
+  }
+
+  ctx.fillStyle=nightEventActive?'#273746':'#79ad83';ctx.beginPath();
   for(let x=-700;x<7000;x+=480){
     const sx=x-cameraX*.25;
     ctx.moveTo(sx,H*.63);ctx.quadraticCurveTo(sx+240,H*.43,sx+480,H*.63);
@@ -325,137 +440,4 @@ function draw(){
   for(const t of trees)drawTree(t.x,t.y,t.s);
   for(const p of platforms)drawPlatform(p);
   for(const g of gold)if(!g.taken)drawGold(g);
-  for(const e of enemies)if(!e.dead)drawEnemy(e);
-  drawElevator();
-  drawPlayer();
-
-  for(const p of particles){
-    ctx.globalAlpha=Math.max(0,p.life/45);
-    ctx.fillStyle='#fff3a0';ctx.fillRect(p.x,p.y,5,5);
-    ctx.globalAlpha=1;
-  }
-  ctx.restore();
-
-  if(player && player.x>3900 && !elevator.inside){
-    ctx.fillStyle='#fff';ctx.font='900 17px Arial';ctx.textAlign='center';
-    ctx.fillText('ASANSÖR →',W*.72,105);ctx.textAlign='left';
-  }
-}
-
-function drawCloud(x,y,s){
-  ctx.fillStyle='#ffffffbb';ctx.beginPath();
-  ctx.arc(x,y,22*s,0,Math.PI*2);ctx.arc(x+24*s,y-13*s,29*s,0,Math.PI*2);
-  ctx.arc(x+54*s,y,23*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawTree(x,y,s){
-  ctx.fillStyle='#664329';ctx.fillRect(x-9*s,y,18*s,115*s);
-  ctx.fillStyle='#2d7541';ctx.beginPath();
-  ctx.arc(x,y,43*s,0,Math.PI*2);ctx.arc(x-30*s,y+22*s,29*s,0,Math.PI*2);
-  ctx.arc(x+30*s,y+23*s,31*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#5bb05c';ctx.beginPath();ctx.arc(x-13*s,y-17*s,24*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawPlatform(p){
-  ctx.fillStyle='#6a4529';ctx.fillRect(p.x,p.y,p.w,p.h);
-  ctx.fillStyle='#38a449';ctx.fillRect(p.x,p.y,p.w,17);
-  ctx.fillStyle='#63c75e';
-  for(let x=p.x;x<p.x+p.w;x+=13){
-    ctx.beginPath();ctx.moveTo(x,p.y+2);ctx.lineTo(x+4,p.y-8);ctx.lineTo(x+6,p.y+2);ctx.fill();
-  }
-  ctx.fillStyle='#8b5a35';
-  for(let x=p.x+12;x<p.x+p.w;x+=45){
-    ctx.beginPath();ctx.arc(x,p.y+45,5,0,Math.PI*2);ctx.fill();
-  }
-}
-
-function drawGold(g){
-  const y=g.y+Math.sin(performance.now()/300+g.phase)*4;
-  ctx.fillStyle='#f7c928';ctx.beginPath();ctx.arc(g.x,y,11,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#a06e00';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#fff6a8';ctx.beginPath();ctx.arc(g.x-3,y-3,3,0,Math.PI*2);ctx.fill();
-}
-
-function drawEnemy(e){
-  const colors=['#7343a9','#c34c38','#287f78'];
-  ctx.fillStyle=colors[e.type];
-  ctx.beginPath();ctx.ellipse(e.x+22,e.y+28,23,22,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=colors[e.type];
-  ctx.beginPath();ctx.moveTo(e.x+5,e.y+13);ctx.lineTo(e.x+12,e.y-3);ctx.lineTo(e.x+19,e.y+14);ctx.fill();
-  ctx.beginPath();ctx.moveTo(e.x+25,e.y+14);ctx.lineTo(e.x+34,e.y-3);ctx.lineTo(e.x+40,e.y+15);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(e.x+14,e.y+23,7,0,Math.PI*2);ctx.arc(e.x+31,e.y+23,7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#171717';ctx.beginPath();ctx.arc(e.x+14,e.y+23,3,0,Math.PI*2);ctx.arc(e.x+31,e.y+23,3,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#222';ctx.fillRect(e.x+7,e.y+46,11,5);ctx.fillRect(e.x+28,e.y+46,11,5);
-}
-
-function drawPlayer(){
-  if(!player)return;
-  if(player.inv>0 && Math.floor(player.inv/7)%2===0)return;
-
-  ctx.fillStyle='#158c45';ctx.fillRect(player.x+4,player.y+2,27,14);
-  ctx.fillStyle='#0c6330';ctx.fillRect(player.x+1,player.y+12,34,6);
-  ctx.fillStyle='#ffd0a1';ctx.fillRect(player.x+8,player.y+17,21,22);
-  ctx.fillStyle='#3b2419';ctx.fillRect(player.x+8,player.y+17,21,6);
-  ctx.fillStyle='#111';ctx.fillRect(player.x+(player.face>0?24:8),player.y+27,3,3);
-  ctx.fillStyle='#158c45';ctx.fillRect(player.x+5,player.y+38,25,17);
-  ctx.fillStyle='#0b5d30';ctx.fillRect(player.x+1,player.y+53,14,7);ctx.fillRect(player.x+22,player.y+53,14,7);
-  ctx.fillStyle='#f2d63b';ctx.fillRect(player.x+10,player.y+40,4,4);ctx.fillRect(player.x+22,player.y+40,4,4);
-}
-
-function drawElevator(){
-  const e=elevator;
-  ctx.fillStyle='#38434a';ctx.fillRect(e.x,e.y,e.w,e.h);
-  ctx.fillStyle='#8e9aa0';ctx.fillRect(e.x+5,e.y+5,e.w-10,e.h-10);
-  ctx.fillStyle='#202a30';ctx.fillRect(e.x+10,e.y+15,e.w-20,e.h-20);
-  const gap=(e.w-20)/2*(1-e.closed);
-  ctx.fillStyle='#aeb8bd';
-  ctx.fillRect(e.x+10,e.y+15,gap,e.h-20);
-  ctx.fillRect(e.x+e.w-10-gap,e.y+15,gap,e.h-20);
-  ctx.fillStyle='#ffd43b';ctx.fillRect(e.x+e.w/2-4,e.y+25,8,10);
-  ctx.fillStyle='#dff7ff';ctx.fillRect(e.x+e.w/2-3,e.y+7,6,4);
-}
-
-function jump(){
-  if(running && player.onGround){player.vy=-12.5;player.onGround=false;burst(player.x+17,player.y+57,4)}
-}
-
-function bindHold(id,key){
-  const el=document.getElementById(id);
-  const press=e=>{e.preventDefault();input[key]=true;el.classList.add('down');try{el.setPointerCapture(e.pointerId)}catch(_){}};
-  const release=e=>{e.preventDefault();input[key]=false;el.classList.remove('down')};
-  el.addEventListener('pointerdown',press,{passive:false});
-  el.addEventListener('pointerup',release,{passive:false});
-  el.addEventListener('pointercancel',release,{passive:false});
-  el.addEventListener('lostpointercapture',release,{passive:false});
-}
-bindHold('left','left');bindHold('right','right');
-
-const jumpEl=document.getElementById('jump');
-jumpEl.addEventListener('pointerdown',e=>{e.preventDefault();jump();jumpEl.classList.add('down');try{jumpEl.setPointerCapture(e.pointerId)}catch(_){}},{passive:false});
-['pointerup','pointercancel','lostpointercapture'].forEach(ev=>jumpEl.addEventListener(ev,e=>{e.preventDefault();jumpEl.classList.remove('down')},{passive:false}));
-
-addEventListener('keydown',e=>{
-  if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')input.left=true;
-  if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')input.right=true;
-  if(e.key==='ArrowUp'||e.key===' '||e.key.toLowerCase()==='w'){e.preventDefault();jump()}
-});
-addEventListener('keyup',e=>{
-  if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')input.left=false;
-  if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')input.right=false;
-});
-
-document.getElementById('replay').addEventListener('click',()=>startLevel(1));
-document.getElementById('retry').addEventListener('click',()=>startLevel(1));
-document.getElementById('toMenu').addEventListener('click',openMenu);
-document.getElementById('overMenu').addEventListener('click',openMenu);
-document.getElementById('next').addEventListener('click',showNotice);
-
-function frame(t){
-  const dt=Math.min(2,(t-last)/16.666||1);last=t;
-  update(dt);draw();requestAnimationFrame(frame);
-}
-buildLevel();requestAnimationFrame(frame);
-})();
-</script>
-</body>
-  </html>
+  if(enemiesActive){for(const e of enemies)if(!e.dead)drawEnemy
