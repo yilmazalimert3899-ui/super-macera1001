@@ -458,8 +458,8 @@ buildLevel();requestAnimationFrame(frame);
 })();
 </script>
 
-<!-- ================= YÖNETİCİ PANELİ EKLENTİSİ (ORİJİNAL KODLARA DOKUNULMAMIŞTIR) ================= -->
-<button id="adminOpenBtn" style="position:fixed;top:10px;left:10px;z-index:99999;padding:8px 14px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;box-shadow:0 4px 6px rgba(0,0,0,0.3);font-size:14px;">Panel</button>
+<!-- ================= YÖNETİCİ PANELİ EKLENTİSİ (DOKUNMATİK UYUMLU) ================= -->
+<button id="adminOpenBtn" style="position:fixed;top:10px;left:10px;z-index:999999;pointer-events:auto;padding:8px 14px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;box-shadow:0 4px 6px rgba(0,0,0,0.3);font-size:14px;touch-action:manipulation;">Panel</button>
 
 <div id="adminPassModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100000;justify-content:center;align-items:center;">
   <div style="background:#222;padding:25px;border-radius:12px;text-align:center;color:#fff;width:300px;box-shadow:0 5px 15px rgba(0,0,0,0.5);">
@@ -467,4 +467,4 @@ buildLevel();requestAnimationFrame(frame);
     <p style="font-size:12px;color:#aaa;margin:10px 0;">Şifreyi giriniz:</p>
     <input type="password" id="adminPassInput" style="width:100%;padding:10px;border-radius:6px;border:1px solid #444;background:#111;color:#fff;margin-bottom:15px;text-align:center;" placeholder="Şifre">
     <button id="adminPassSubmit" style="padding:8px 15px;background:#2ecc71;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-right:5px;">Giriş</button>
-    <button id="adminPassClose" style="padding:8px 15px;background:#e74c3c;color:#fff
+    <button id="adminPassClose" style="padding:8px 15
